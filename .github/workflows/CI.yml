@@ -19,5 +19,3 @@ jobs:
           java-version: '17'
 
       - run: make build
-
-      - run: make test

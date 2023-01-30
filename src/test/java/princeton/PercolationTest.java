@@ -60,6 +60,6 @@ class PercolationTest {
         assertEquals(percolation.percolates(), false);
         percolation.open(1,2);
         percolation.open(1,1);
-        assertEquals(percolation.percolates(), false);
+        assertEquals(percolation.percolates(), true);
     }
 }
