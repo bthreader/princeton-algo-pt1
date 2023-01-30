@@ -1,7 +1,5 @@
 package princeton.w1;
 
-import edu.princeton.cs.algs4.StdIn;
-
 public class Percolation {
     private int top;
     private int bottom;

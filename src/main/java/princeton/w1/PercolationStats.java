@@ -36,8 +36,4 @@ public class PercolationStats {
         x = 100.00;
         return x;
     }
-
-   // test client (see below)
-   public static void main(String[] args) {}
-
 }
