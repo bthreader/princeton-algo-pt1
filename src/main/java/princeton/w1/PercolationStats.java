@@ -1,4 +1,4 @@
-package w1;
+package princeton.w1;
 
 public class PercolationStats {
 

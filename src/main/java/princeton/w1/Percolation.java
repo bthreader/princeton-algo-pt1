@@ -1,4 +1,6 @@
-package w1;
+package princeton.w1;
+
+import edu.princeton.cs.algs4.StdIn;
 
 public class Percolation {
     private int top;
@@ -12,9 +14,15 @@ public class Percolation {
         if (n<=0) {
             throw new IllegalArgumentException();
         }
+
         this.n = n;
+        this.id = new int[n][n];
+        this.open = new boolean[n][n];
+        this.top = n+1;
+        this.bottom = n+2;
+
         for (int x = 0; x < n; x++) {
-            for (int y = 0; x < n; y++) {
+            for (int y = 0; y < n; y++) {
                 this.id[x][y] = x+y+1;
                 this.open[x][y] = false;
             }
@@ -52,7 +60,8 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-        return;
+        int n = StdIn.readInt();
+        Percolation percolation = new Percolation(n);
     }
 
     private void checkGridValidity(int row, int col) {
