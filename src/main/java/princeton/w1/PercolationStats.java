@@ -1,9 +1,13 @@
 package princeton.w1;
 
 import edu.princeton.cs.algs4.StdRandom;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PercolationStats {
     private double[] percolationThresholds;
+    private final int n;
+    private final int trials;
 
     // perform independent trials on an n-by-n grid
     public PercolationStats(int n, int trials) {
@@ -11,18 +15,22 @@ public class PercolationStats {
             throw new IllegalArgumentException();
         }
 
-        this.percolationThresholds = new double[n];
+        this.percolationThresholds = new double[trials];
+        this.trials = trials;
+        this.n = n;
 
         for (int i = 0; i < trials; i++) {
-            performTrial(i, n);
+            performTrial(i);
         }
     }
 
     // sample mean of percolation threshold
     public double mean() {
-        double x;
-        x = 100.00;
-        return x;
+        double sum = 0;
+        for (int i = 0; i < this.trials; i++) {
+            sum += this.percolationThresholds[i];
+        }
+        return sum/this.trials;
     }
 
     // sample standard deviation of percolation threshold
@@ -46,19 +54,39 @@ public class PercolationStats {
         return x;
     }
 
-    private void performTrial(int trialIndex, int n) {
-        Percolation percolation = new Percolation(n);
+    private void performTrial(int trialIndex) {
+        Percolation percolation = new Percolation(this.n);
 
         int x;
         int y;
-        boolean[] blockedSites;
-        while (!percolation.percolates()) {
-            // Change this to only sample blocked sites
-            x = StdRandom.uniformInt(n-1)+1;
-            y = StdRandom.uniformInt(n-1)+1;
+        int index;
+        List<int[]> blockedSites = this.createInitialCoordsArray();
+        while (!percolation.percolates() && blockedSites.size() > 0) {
+            index = StdRandom.uniformInt(blockedSites.size()-1);
+            int[] blockedSite = blockedSites.get(index);
+            x = blockedSite[0];
+            y = blockedSite[1];
             percolation.open(x, y);
+            blockedSites.remove(index);
         }
 
-        percolationThresholds[trialIndex] = 2/3;
+        int totalSites = n*n;
+        int fullSites = totalSites-blockedSites.size();
+        percolationThresholds[trialIndex] = (double) fullSites/totalSites;
+    }
+
+    private List<int[]> createInitialCoordsArray() {
+        List<int[]> coords = new ArrayList<>();
+
+        for (int f = 1; f < this.n+1; f++) {
+            for (int g = 1; g < this.n+1; g++) {
+                int[] coord = new int[2];
+                coord[0] = f;
+                coord[1] = g;
+                coords.add(coord);
+            }
+        }
+
+        return coords;
     }
 }
