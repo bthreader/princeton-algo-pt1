@@ -1,11 +1,11 @@
 package princeton.w1;
 
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
-import java.util.List;
-import java.util.ArrayList;
+import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-    private double[] percolationThresholds;
+    private final double[] percolationThresholds;
     private final int n;
     private final int trials;
 
@@ -16,77 +16,70 @@ public class PercolationStats {
         }
 
         this.percolationThresholds = new double[trials];
-        this.trials = trials;
         this.n = n;
+        this.trials = trials;
 
         for (int i = 0; i < trials; i++) {
-            performTrial(i);
+            Percolation p = new Percolation(n);
+            int totalOpenSites = 0;
+
+            while (!p.percolates()) {
+                randomnlyOpenSite(p);
+                totalOpenSites++;
+            }
+
+            percolationThresholds[i] = (double) totalOpenSites / (n *n);
         }
     }
 
     // sample mean of percolation threshold
     public double mean() {
-        double sum = 0;
-        for (int i = 0; i < this.trials; i++) {
-            sum += this.percolationThresholds[i];
-        }
-        return sum/this.trials;
+        return StdStats.mean(this.percolationThresholds);
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        double x;
-        x = 100.00;
-        return x;
+        return StdStats.stddev(this.percolationThresholds);
     }
 
     // low endpoint of 95% confidence interval
     public double confidenceLo() {
-        double x;
-        x = 100.00;
-        return x;
+        return this.mean()-1.96/Math.sqrt(this.trials);
     }
 
     // high endpoint of 95% confidence interval
     public double confidenceHi() {
-        double x;
-        x = 100.00;
-        return x;
+        return this.mean()+1.96/Math.sqrt(this.trials);
     }
 
-    private void performTrial(int trialIndex) {
-        Percolation percolation = new Percolation(this.n);
-
-        int x;
-        int y;
-        int index;
-        List<int[]> blockedSites = this.createInitialCoordsArray();
-        while (!percolation.percolates() && blockedSites.size() > 0) {
-            index = StdRandom.uniformInt(blockedSites.size()-1);
-            int[] blockedSite = blockedSites.get(index);
-            x = blockedSite[0];
-            y = blockedSite[1];
-            percolation.open(x, y);
-            blockedSites.remove(index);
-        }
-
-        int totalSites = n*n;
-        int fullSites = totalSites-blockedSites.size();
-        percolationThresholds[trialIndex] = (double) fullSites/totalSites;
+    // test client (see below)
+    public static void main(String[] args) {
+        int n = Integer.parseInt(args[0]);
+        int t = Integer.parseInt(args[1]);
+        PercolationStats percolationStats = new PercolationStats(n, t);
+        StdOut.println("mean                    = ".concat(String.valueOf(percolationStats.mean())));
+        StdOut.println("stddev                  = ".concat(String.valueOf(percolationStats.stddev())));
+        StdOut.println("95% confidence interval = ["
+                .concat(String.valueOf(percolationStats.confidenceLo()))
+                .concat(", ")
+                .concat(String.valueOf(percolationStats.confidenceHi()))
+                .concat("]")
+        );
     }
 
-    private List<int[]> createInitialCoordsArray() {
-        List<int[]> coords = new ArrayList<>();
+    private void randomnlyOpenSite(Percolation p) {
+        boolean openSite = true;
+        int row = 0;
+        int col = 0;
 
-        for (int f = 1; f < this.n+1; f++) {
-            for (int g = 1; g < this.n+1; g++) {
-                int[] coord = new int[2];
-                coord[0] = f;
-                coord[1] = g;
-                coords.add(coord);
-            }
+        // Sample until we find a blocked site
+        while (openSite) {
+            row = StdRandom.uniformInt(1, n + 1);
+            col = StdRandom.uniformInt(1, n + 1);
+
+            openSite = p.isOpen(row, col);
         }
 
-        return coords;
+        p.open(row, col);
     }
 }
