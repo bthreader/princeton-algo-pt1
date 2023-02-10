@@ -2,12 +2,13 @@ package princeton.w2;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class Deque<Item> implements Iterable<Item> {
         private Node linkedList = new Node();
         private int linkedListSize = 0;
 
-        class Node {
+        private class Node {
                 private Node next = null;
                 private Item value = null;
 
@@ -81,6 +82,25 @@ public class Deque<Item> implements Iterable<Item> {
                 }
         }
 
+        private class LinkedListIterator implements Iterator<Item> {
+                private Node linkedList;
+                public LinkedListIterator(Node linkedList) {
+                        this.linkedList = linkedList;
+                }
+
+                @Override
+                public boolean hasNext() {
+                        return linkedList.value != null;
+                }
+
+                @Override
+                public Item next() {
+                        Item valueCopy = linkedList.value;
+                        linkedList = Objects.requireNonNullElseGet(linkedList.next, Node::new);
+                        return valueCopy;
+                }
+        }
+
         // construct an empty deque
         public Deque() {}
 
@@ -118,17 +138,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         // return an iterator over items in order from front to back
         public Iterator<Item> iterator() {
-                return new Iterator<Item>() {
-                        @Override
-                        public boolean hasNext() {
-                                return false;
-                        }
-
-                        @Override
-                        public Item next() {
-                                return null;
-                        }
-                };
+                return new LinkedListIterator(linkedList);
         }
 
         // unit testing (required)
