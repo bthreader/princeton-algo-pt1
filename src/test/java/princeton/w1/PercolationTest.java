@@ -1,8 +1,6 @@
-package princeton;
+package princeton.w1;
 
 import org.junit.jupiter.api.Test;
-import princeton.w1.Percolation;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class PercolationTest {

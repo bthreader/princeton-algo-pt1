@@ -3,14 +3,11 @@ package princeton.w1;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-
-
     private final int n;
-    private final int top;
-    private final int bottom;
+    private final int top; // virtual top site index
+    private final int bottom; // virtual bottom site index
     private boolean[][] open;
     private int totalOpen = 0;
-
     private WeightedQuickUnionUF qf;
 
     // creates n-by-n grid, with all sites initially blocked
@@ -40,16 +37,18 @@ public class Percolation {
         if (row == this.n) {
             qf.union(flatIndex, bottom);
         }
+        // left
         if (col > 1 && this.isOpen(row, col-1)) {
             qf.union(flatIndex, this.oneIndexedRowColToFlatIndex(row, col-1));
         }
+        // right
         if (col < this.n && this.isOpen(row, col+1)) {
                 qf.union(flatIndex, this.oneIndexedRowColToFlatIndex(row, col+1));
         }
+        // up
         if (row > 1 && this.isOpen(row-1, col)) {
             qf.union(flatIndex, this.oneIndexedRowColToFlatIndex(row-1, col));
         }
-
         // down
         if (row < this.n && this.isOpen(row+1, col)) {
             qf.union(flatIndex, this.oneIndexedRowColToFlatIndex(row+1, col));

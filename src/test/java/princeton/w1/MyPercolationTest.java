@@ -1,4 +1,4 @@
-package princeton;
+package princeton.w1;
 
 import princeton.w1.extra.MyPercolation;
 import org.junit.jupiter.api.Test;

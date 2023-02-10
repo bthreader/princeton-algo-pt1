@@ -1,6 +1,5 @@
-package princeton;
+package princeton.w1;
 
-import princeton.w1.PercolationStats;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
