@@ -24,6 +24,7 @@ public class Deque<Item> implements Iterable<Item> {
                         this.value = value;
                 }
 
+                // Returns the item that is removed
                 public Item dequeue() {
                         if (isEmpty()) {
                                 throw new NoSuchElementException();
@@ -33,7 +34,6 @@ public class Deque<Item> implements Iterable<Item> {
                         // List becomes empty
                         if (next == null) {
                                 value = null;
-
                         }
                         else {
                                 value = next.value;
@@ -43,29 +43,37 @@ public class Deque<Item> implements Iterable<Item> {
                 }
 
                 public void push(Item value) {
-                        Node currentNext = next;
-                        while (currentNext.next != null) {
-                                currentNext = currentNext.next;
+                        if (isEmpty()) {
+                                this.value = value;
+                                return;
                         }
-                        currentNext.next = new Node(null, value);
+                        if (next == null) {
+                                next = new Node(null, value);
+                                return;
+                        }
+                        Node last = next;
+                        // Get the pointer into the correct place
+                        while (last.next != null) {
+                                last = last.next;
+                        }
+                        last.next = new Node(null, value);
                 }
 
+                // Returns the item that is removed
                 public Item pop() {
                         if (isEmpty()) {
                                 throw new NoSuchElementException();
                         }
-                        // List becomes empty
-                        if (next == null) {
-                                Item valueCopy = value;
-                                value = null;
-                                return valueCopy;
+                        Node secondLast = new Node();
+                        Node last = next;
+                        // Get the pointers into the correct place
+                        while (last.next != null) {
+                                secondLast = last;
+                                last = last.next;
                         }
-                        Node currentNext = next;
-                        while (currentNext.next.next != null) {
-                                currentNext = currentNext.next;
-                        }
-                        currentNext.next = null;
-                        return currentNext.value;
+                        Item valueCopy = last.value;
+                        secondLast.next = null;
+                        return valueCopy;
                 }
 
                 public boolean isEmpty() {
@@ -74,11 +82,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         // construct an empty deque
-        public Deque() {
-                // Doubly linked list otherwise remove/add first will be O(n^2)
-                // Remove/add last will be best case O(1) worst case O(n^2) (resize)
-                // Can't use hashmaps so that rules out doubly linkedlist
-        }
+        public Deque() {}
 
         // is the deque empty?
         public boolean isEmpty() {return linkedList.isEmpty();}
