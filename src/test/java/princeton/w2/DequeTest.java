@@ -70,10 +70,11 @@ public class DequeTest {
 
     @Test void iterator() {
         Deque<Integer> deque = new Deque<Integer>();
-        // [0,1,2]
-        for (int i = 0; i < 3; i++) {
-            deque.addLast(i);
-        }
+        // [0,1,2,3]
+        deque.addFirst(1);
+        deque.addLast(2);
+        deque.addFirst(0);
+        deque.addLast(3);
 
         Iterator<Integer> iterator = deque.iterator();
         assertTrue(iterator.hasNext());
@@ -82,6 +83,8 @@ public class DequeTest {
         assertEquals(1, iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(2, iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(3, iterator.next());
         assertFalse(iterator.hasNext());
     }
 }

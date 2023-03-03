@@ -2,143 +2,130 @@ package princeton.w2;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class Deque<Item> implements Iterable<Item> {
-        private Node linkedList = new Node();
-        private int linkedListSize = 0;
+        private int size = 0;
+        private Node first = null;
+        private Node last = null;
 
         private class Node {
-                private Node next = null;
-                private Item value = null;
+            private Node next;
+            private Node prev;
+            private final Item item;
 
-                public Node() {}
-                public Node(Node next, Item value) {
-                        this.next = next;
-                        this.value = value;
-                }
+            public Node(Node next, Node prev, Item item) {
+                this.next = next;
+                this.prev = prev;
+                this.item = item;
+            }
 
-                public void enqueue(Item value) {
-                        if (!isEmpty()) {
-                                next = new Node(next, this.value);
-                        }
-                        this.value = value;
-                }
+            public void setNext(Node next) {
+                this.next = next;
+            }
 
-                // Returns the item that is removed
-                public Item dequeue() {
-                        if (isEmpty()) {
-                                throw new NoSuchElementException();
-                        }
-                        Item valueCopy = value;
+            public Node getNext() {
+                return this.next;
+            }
 
-                        // List becomes empty
-                        if (next == null) {
-                                value = null;
-                        }
-                        else {
-                                value = next.value;
-                                next = next.next;
-                        }
-                        return valueCopy;
-                }
+            public void setPrev(Node prev) {
+                this.prev = prev;
+            }
 
-                public void push(Item value) {
-                        if (isEmpty()) {
-                                this.value = value;
-                                return;
-                        }
-                        if (next == null) {
-                                next = new Node(null, value);
-                                return;
-                        }
-                        Node last = next;
-                        // Get the pointer into the correct place
-                        while (last.next != null) {
-                                last = last.next;
-                        }
-                        last.next = new Node(null, value);
-                }
+            public Node getPrev() {
+                return this.prev;
+            }
 
-                // Returns the item that is removed
-                public Item pop() {
-                        if (isEmpty()) {
-                                throw new NoSuchElementException();
-                        }
-                        Node secondLast = new Node();
-                        Node last = next;
-                        // Get the pointers into the correct place
-                        while (last.next != null) {
-                                secondLast = last;
-                                last = last.next;
-                        }
-                        Item valueCopy = last.value;
-                        secondLast.next = null;
-                        return valueCopy;
-                }
-
-                public boolean isEmpty() {
-                        return value == null;
-                }
+            public Item getItem() {
+                return this.item;
+            }
         }
 
+        // iterates front to back
         private class LinkedListIterator implements Iterator<Item> {
-                private Node linkedList;
-                public LinkedListIterator(Node linkedList) {
-                        this.linkedList = linkedList;
-                }
+            private Node ll;
 
-                @Override
-                public boolean hasNext() {
-                        return linkedList.value != null;
-                }
+            public LinkedListIterator() {
+                this.ll = first;
+            }
 
-                @Override
-                public Item next() {
-                        Item valueCopy = linkedList.value;
-                        linkedList = Objects.requireNonNullElseGet(linkedList.next, Node::new);
-                        return valueCopy;
-                }
+            @Override
+            public boolean hasNext() { return this.ll != null; };
+
+            public Item next() {
+                Item itemCopy = ll.getItem();
+                ll = ll.getNext();
+                return itemCopy;
+            }
         }
 
         // construct an empty deque
         public Deque() {}
 
         // is the deque empty?
-        public boolean isEmpty() {return linkedList.isEmpty();}
+        public boolean isEmpty() {return size == 0;}
 
         // return the number of items on the deque
-        public int size() {return linkedListSize;}
+        public int size() {return size;}
 
         // add the item to the front
         public void addFirst(Item item) {
-                linkedList.enqueue(item);
-                linkedListSize++;
+            if (isEmpty()) {addToEmpty(item);}
+            else if (size == 1) {
+                first = new Node(last, null, item);
+                last.setPrev(first);
+            }
+            else {
+                Node oldFirst = first;
+                first = new Node(oldFirst, null, item);
+                oldFirst.setPrev(first);
+            }
+            size++;
         }
 
         // add the item to the back
         public void addLast(Item item) {
-                linkedList.push(item);
-                linkedListSize++;
+            if (isEmpty()) {addToEmpty(item);}
+            else if (size == 1) {
+                last = new Node(null, first, item);
+                first.setNext(last);
+            }
+            else {
+                Node oldLast = last;
+                last = new Node(null, oldLast, item);
+                oldLast.setNext(last);
+            }
+            size++;
+        }
+
+        private void addToEmpty(Item item) {
+            first = last = new Node(null, null, item);
         }
 
         // remove and return the item from the front
         public Item removeFirst() {
-                Item item = linkedList.dequeue();
-                linkedListSize--;
-                return item;
+            if (this.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            Item oldFirstItem = first.getItem();
+            first = first.getNext();
+            size--;
+            return oldFirstItem;
         }
 
         // remove and return the item from the back
         public Item removeLast() {
-                Item item = linkedList.pop();
-                linkedListSize--;
-                return item;
+            if (this.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            Item oldLastItem = last.getItem();
+            last = last.getPrev();
+            size--;
+            return oldLastItem;
         }
 
         // return an iterator over items in order from front to back
         public Iterator<Item> iterator() {
-                return new LinkedListIterator(linkedList);
+            return new LinkedListIterator();
         }
 
         // unit testing (required)
